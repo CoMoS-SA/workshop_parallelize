@@ -1,0 +1,65 @@
+---
+title: "Parallelism in R – Tutorials for methods for complexity modelling"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Parallelizing *tidyverse* workflows
+
+[multidplyr](https://github.com/hadley/multidplyr) allows to split the analisyis of evenly-sized subsamples of large datasets (~10m obs) by dispatching across multiple cores. See the *multidplyr* [vignette](https://github.com/hadley/multidplyr/blob/master/vignettes/multidplyr.md) for details and examples.
+
+*multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
+
+
+### Installation
+
+*multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
+
+```{R}
+devtools::install_github("hadley/multidplyr")
+```
+
+
+### Example: country-level regression
+
+From cross-country firm-level data, we want to fit country-wise regression models of average wages on firm controls.
+
+First, create dummy data:
+
+```{r}
+library(tidyverse)
+library(multidplyr)
+
+countries <- c("Italy", "France", "Germany", "Spain", "UK") %>% as.factor()
+
+# Number of observations for each country
+n <- 1000000 
+
+firm_data <- tibble(
+  country = rep(countries, each = n),
+  profits = runif(n = n*length(countries), min = 15, max = 50),
+  unionized = sample(c(TRUE, FALSE), size = n*length(countries), replace = TRUE),
+  share_tertiary = runif(n*length(countries)),
+  employees = runif(n = n*length(countries), min = 1, max = 300) %>% round()
+)
+
+firm_data
+
+pryr::object_size(firm_data)
+```
+
+Initialize a cluster and split the data by country into “shards” using `partition()`. Similar to `group_by()`, but will send each group to a different cluster.
+
+```{r}
+firm_data_part <- partition(firm_data, country)
+```
+
+Then, fit a model by groups using a `do()` expression:
+```{r}
+firm_data_part %>% 
+  do(model_wage = lm(profits ~ employees + unionized +employees + share_tertiary,  data = .))
+```
