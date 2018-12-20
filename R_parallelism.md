@@ -1,33 +1,20 @@
-Parallelism in R – Tutorials for methods for complexity modelling
-================
-
 Parallelizing *tidyverse* workflows
------------------------------------
+================
 
 [multidplyr](https://github.com/hadley/multidplyr) allows to split the analisyis of evenly-sized subsamples of large datasets (~10m obs) by dispatching across multiple cores. See the *multidplyr* [vignette](https://github.com/hadley/multidplyr/blob/master/vignettes/multidplyr.md) for details and examples.
 
+Installation
+------------
+
 *multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
-
-### Installation
-
-*multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
-
-``` r
-devtools::install_github("hadley/multidplyr")
-```
 
     ## Skipping install of 'multidplyr' from a github remote, the SHA1 (0085ded4) has not changed since last install.
     ##   Use `force = TRUE` to force installation
 
-### Example: country-level regression
+Example: country-level regression
+---------------------------------
 
 From cross-country firm-level data, we want to fit country-wise regression models of average wages on firm controls.
-
-First, create dummy data:
-
-``` r
-library(tidyverse)
-```
 
     ## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
 
@@ -40,9 +27,9 @@ library(tidyverse)
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
 
-``` r
-library(multidplyr)
+Create dummy data:
 
+``` r
 countries <- c("Italy", "France", "Germany", "Spain", "UK") %>% as.factor()
 
 # Number of observations for each country
@@ -62,16 +49,16 @@ firm_data
     ## # A tibble: 5,000,000 x 5
     ##    country profits unionized share_tertiary employees
     ##    <fct>     <dbl> <lgl>              <dbl>     <dbl>
-    ##  1 Italy      47.4 FALSE             0.966        289
-    ##  2 Italy      28.1 TRUE              0.201         77
-    ##  3 Italy      19.7 TRUE              0.728        251
-    ##  4 Italy      34.8 TRUE              0.0282       234
-    ##  5 Italy      26.0 TRUE              0.261          8
-    ##  6 Italy      23.9 TRUE              0.257         31
-    ##  7 Italy      24.1 TRUE              0.149        162
-    ##  8 Italy      46.3 TRUE              0.418        201
-    ##  9 Italy      48.1 TRUE              0.573        214
-    ## 10 Italy      25.4 FALSE             0.707         85
+    ##  1 Italy      37.4 FALSE             0.308        115
+    ##  2 Italy      16.5 TRUE              0.0377       190
+    ##  3 Italy      48.2 TRUE              0.708        226
+    ##  4 Italy      23.5 TRUE              0.607        129
+    ##  5 Italy      38.7 FALSE             0.840        223
+    ##  6 Italy      21.9 TRUE              0.272         17
+    ##  7 Italy      35.2 TRUE              0.560        155
+    ##  8 Italy      36.5 TRUE              0.412        133
+    ##  9 Italy      25.7 FALSE             0.359        130
+    ## 10 Italy      21.0 FALSE             0.291        106
     ## # ... with 4,999,990 more rows
 
 ``` r
@@ -104,8 +91,8 @@ firm_data_part %>%
     ## # S3: party_df
     ##   country model_wage
     ##   <fct>   <list>    
-    ## 1 UK      <S3: lm>  
-    ## 2 Germany <S3: lm>  
-    ## 3 Italy   <S3: lm>  
-    ## 4 France  <S3: lm>  
+    ## 1 Italy   <S3: lm>  
+    ## 2 France  <S3: lm>  
+    ## 3 UK      <S3: lm>  
+    ## 4 Germany <S3: lm>  
     ## 5 Spain   <S3: lm>

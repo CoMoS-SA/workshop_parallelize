@@ -1,5 +1,5 @@
 ---
-title: "Parallelism in R – Tutorials for methods for complexity modelling"
+title: "Parallelizing *tidyverse* workflows"
 output: github_document
 ---
 
@@ -7,33 +7,31 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
-## Parallelizing *tidyverse* workflows
-
 [multidplyr](https://github.com/hadley/multidplyr) allows to split the analisyis of evenly-sized subsamples of large datasets (~10m obs) by dispatching across multiple cores. See the *multidplyr* [vignette](https://github.com/hadley/multidplyr/blob/master/vignettes/multidplyr.md) for details and examples.
 
-*multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
-
-
-### Installation
+## Installation
 
 *multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
 
-```{R}
+```{R, echo=FALSE}
 devtools::install_github("hadley/multidplyr")
 ```
 
 
-### Example: country-level regression
+## Example: country-level regression
 
 From cross-country firm-level data, we want to fit country-wise regression models of average wages on firm controls.
 
-First, create dummy data:
-
-```{r}
+```{r, echo=FALSE}
 library(tidyverse)
 library(multidplyr)
+```
 
+
+Create dummy data:
+
+
+```{r}
 countries <- c("Italy", "France", "Germany", "Spain", "UK") %>% as.factor()
 
 # Number of observations for each country
