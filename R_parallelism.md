@@ -8,24 +8,19 @@ Installation
 
 *multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
 
-    ## Skipping install of 'multidplyr' from a github remote, the SHA1 (0085ded4) has not changed since last install.
-    ##   Use `force = TRUE` to force installation
+``` r
+devtools::install_github("hadley/multidplyr")
+```
 
 Example: country-level regression
 ---------------------------------
 
 From cross-country firm-level data, we want to fit country-wise regression models of average wages on firm controls.
 
-    ## -- Attaching packages ------------------------------------------------------------------------------------------------------------------------------------- tidyverse 1.2.1 --
-
-    ## v ggplot2 3.1.0     v purrr   0.2.5
-    ## v tibble  1.4.2     v dplyr   0.7.8
-    ## v tidyr   0.8.2     v stringr 1.3.1
-    ## v readr   1.3.0     v forcats 0.3.0
-
-    ## -- Conflicts ---------------------------------------------------------------------------------------------------------------------------------------- tidyverse_conflicts() --
-    ## x dplyr::filter() masks stats::filter()
-    ## x dplyr::lag()    masks stats::lag()
+``` r
+library(tidyverse)
+library(multidplyr)
+```
 
 Create dummy data:
 
@@ -49,23 +44,17 @@ firm_data
     ## # A tibble: 5,000,000 x 5
     ##    country profits unionized share_tertiary employees
     ##    <fct>     <dbl> <lgl>              <dbl>     <dbl>
-    ##  1 Italy      37.4 FALSE             0.308        115
-    ##  2 Italy      16.5 TRUE              0.0377       190
-    ##  3 Italy      48.2 TRUE              0.708        226
-    ##  4 Italy      23.5 TRUE              0.607        129
-    ##  5 Italy      38.7 FALSE             0.840        223
-    ##  6 Italy      21.9 TRUE              0.272         17
-    ##  7 Italy      35.2 TRUE              0.560        155
-    ##  8 Italy      36.5 TRUE              0.412        133
-    ##  9 Italy      25.7 FALSE             0.359        130
-    ## 10 Italy      21.0 FALSE             0.291        106
+    ##  1 Italy      20.1 FALSE             0.193         31
+    ##  2 Italy      47.3 TRUE              0.206        155
+    ##  3 Italy      40.0 TRUE              0.528        126
+    ##  4 Italy      48.7 FALSE             0.0860        69
+    ##  5 Italy      43.8 TRUE              0.402        192
+    ##  6 Italy      34.9 FALSE             0.367         93
+    ##  7 Italy      18.3 TRUE              0.212        271
+    ##  8 Italy      18.8 TRUE              0.319        278
+    ##  9 Italy      34.5 TRUE              0.0215         6
+    ## 10 Italy      25.8 TRUE              0.307         37
     ## # ... with 4,999,990 more rows
-
-``` r
-pryr::object_size(firm_data)
-```
-
-    ## 160 MB
 
 Initialize a cluster and split the data by country into “shards” using `partition()`. Similar to `group_by()`, but will send each group to a different cluster.
 
@@ -92,7 +81,7 @@ firm_data_part %>%
     ##   country model_wage
     ##   <fct>   <list>    
     ## 1 Italy   <S3: lm>  
-    ## 2 France  <S3: lm>  
+    ## 2 Germany <S3: lm>  
     ## 3 UK      <S3: lm>  
-    ## 4 Germany <S3: lm>  
+    ## 4 France  <S3: lm>  
     ## 5 Spain   <S3: lm>

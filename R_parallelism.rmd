@@ -13,7 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 *multidplyr* is a library under development: installation requires the [devtools](https://cran.r-project.org/web/packages/devtools/index.html) library to compile from source – and [rtools](https://cran.r-project.org/bin/windows/Rtools/) on Windows.
 
-```{R, echo=FALSE}
+```{R message=FALSE, warning=FALSE}
 devtools::install_github("hadley/multidplyr")
 ```
 
@@ -22,7 +22,7 @@ devtools::install_github("hadley/multidplyr")
 
 From cross-country firm-level data, we want to fit country-wise regression models of average wages on firm controls.
 
-```{r, echo=FALSE}
+```{r message=FALSE, warning=FALSE}
 library(tidyverse)
 library(multidplyr)
 ```
@@ -46,8 +46,6 @@ firm_data <- tibble(
 )
 
 firm_data
-
-pryr::object_size(firm_data)
 ```
 
 Initialize a cluster and split the data by country into “shards” using `partition()`. Similar to `group_by()`, but will send each group to a different cluster.
