@@ -3,7 +3,7 @@ R-Parallelism in Monte Carlo Experiments using *doParallel, doRNG*
 
 The *doParallel* library allows to run tasks on parallel on different
 cores, rather than sequentially. The *doRNG* package extends the
-previous one by enabling the replication of the whole parallel task.
+previous one by enabling the replication of the whole parallel task. 
 
 [Getting Started
 Parallel](https://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf)
