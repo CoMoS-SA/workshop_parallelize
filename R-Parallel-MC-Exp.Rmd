@@ -156,7 +156,7 @@ df3     <- data.frame(true = true.b2)
 
 df2     <- df %>% 
   gather(key,value,rho.0.5,rho.0.25,rho.0) %>% 
-  mutate(true = c(true.b2,true.b2,true.b2))
+  mutate(true = c(true.b2,true.b2,true.b2)) 
 
 p <- ggplot(df2, aes(x = value))+
   stat_density(aes(group = key),position = "identity",geom = "line", size = 0.8)+
