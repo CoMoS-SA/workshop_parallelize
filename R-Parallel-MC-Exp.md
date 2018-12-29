@@ -20,7 +20,7 @@ Installation
 Example 1: Parallelizing Monte Carlo Replications
 -------------------------------------------------
 
-\#\#\# Omitted variable bias in OLS estimator's distribution in linear
+### Omitted variable bias in OLS estimator's distribution in linear
 regression model.
 
 -   Create random data and true parameters
@@ -85,13 +85,13 @@ regression model.
 Example 2: Parallelizing Simulation Experiments
 -----------------------------------------------
 
-\#\#\# Analyse the *size* of the Omitted Variable Bias [Little recap on
+### Analyse the *size* of the Omitted Variable Bias [Little recap on
 OLS Regression and Omitted Variable
 bias](http://www.homepages.ucl.ac.uk/~uctpsc0/Teaching/GR03/MRM.pdf)
 
 Analitical Results lead to
 
-*b**i**a**s*(*β*<sub>*i**n**c**l**u**d**e**d*</sub>)=*β*<sub>*o**m**i**t**t**e**d*</sub>\[*C**o**v*(*X*<sub>*i**n**c**l**u**d**e**d*</sub>, *X*<sub>*o**m**i**t**t**e**d*</sub>)/*V**a**r*(*X*<sub>*i**n**c**l**u**d**e**d*</sub>)\]
+*bias(β<sub>included*</sub>)=*β*<sub>*o**m**i**t**t**e**d*</sub>\[*C**o**v*(*X*<sub>*i**n**c**l**u**d**e**d*</sub>, *X*<sub>*o**m**i**t**t**e**d*</sub>)/*V**a**r*(*X*<sub>*i**n**c**l**u**d**e**d*</sub>)\]
 
 If omitted variables are correlated with included variables, then we
 obtained biased estimates.
