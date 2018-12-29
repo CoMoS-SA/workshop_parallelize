@@ -80,7 +80,8 @@ regression model.
       theme(panel.grid.major = element_blank(),
             legend.title = element_blank())
 
-![](R-Parallelism_in_Monte_Carlo_Experiments_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+![alt text](https://github.com/CoMoS-SA/tutorials/blob/master/Rplot01.png)
+
 
 Example 2: Parallelizing Simulation Experiments
 -----------------------------------------------
@@ -181,5 +182,4 @@ obtained biased estimates.
 ![alt text](https://github.com/CoMoS-SA/tutorials/blob/master/Rplot.png)
 
 #### As expected, the experiment shows the bias is linearly dependent on the correlation between the omitted variable and the included ones
-
-![alt text](https://github.com/CoMoS-SA/tutorials/blob/master/Rplot01.png)
+![alt text](https://github.com/CoMoS-SA/tutorials/blob/master/Rplot02.png)
