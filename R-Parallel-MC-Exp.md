@@ -1,4 +1,4 @@
-using *doParallel, doRNG*
+R-Parallelism in Monte Carlo Experiments using *doParallel, doRNG*
 -------------------------
 
 The *doParallel* library allows to run tasks on parallel on different
