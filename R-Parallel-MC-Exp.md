@@ -20,8 +20,7 @@ Installation
 Example 1: Parallelizing Monte Carlo Replications
 -------------------------------------------------
 
-### Omitted variable bias in OLS estimator's distribution in linear
-regression model.
+### Omitted variable bias in OLS estimator in linear regression model.
 
 -   Create random data and true parameters
 
@@ -86,8 +85,8 @@ regression model.
 Example 2: Parallelizing Simulation Experiments
 -----------------------------------------------
 
-### Analyse the *size* of the Omitted Variable Bias [Little recap on
-OLS Regression and Omitted Variable
+### Analyse the *size* of the Omitted Variable Bias 
+[Little recap on OLS Regression and Omitted Variable
 bias](http://www.homepages.ucl.ac.uk/~uctpsc0/Teaching/GR03/MRM.pdf)
 
 Analitical Results lead to
