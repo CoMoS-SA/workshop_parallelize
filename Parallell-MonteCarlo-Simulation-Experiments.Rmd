@@ -1,0 +1,188 @@
+---
+title: "R-Parallelism in Monte Carlo Experiments"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## using *doParallel, doRNG*
+
+The *doParallel* library allows to run tasks on parallel on different cores, rather than sequentially.
+The *doRNG* package extends the previous one by enabling the replication of the whole parallel task.
+
+[Getting Started Parallel](https://cran.r-project.org/web/packages/doParallel/vignettes/gettingstartedParallel.pdf) 
+
+Installation 
+------------
+```{r, message=FALSE}
+library(doParallel)
+library(doRNG)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+```
+Example 1: Parallelizing Monte Carlo Replications
+-------------------------------------------------
+
+### Omitted variable bias in OLS estimator's distribution in linear regression model.
+
+* Create random data and true parameters
+
+```{r}
+MonteC   <- 2000
+## Data
+set.seed(123)
+x1       <- rnorm(1000,0,1)
+x2       <- rnorm(1000,0,1)
+x3       <- rnorm(1000,0,1)
+xx       <- matrix(data = c(x1,x2,x3),ncol = 3)      ## All variables
+xx.obs   <- xx[,1:2]                                 ## Observable variables
+# Coefficients
+btrue    <-  as.vector(x = c(0.5,1,-0.5))
+beta.hat  <- matrix(data = NA,nrow = MonteC,ncol = 2)
+```
+* Setup Parallel Task
+```{r}
+cores    <- detectCores()             
+cl       <- parallel::makeCluster(cores - 1, type="FORK")       # You can also select a given number of cores
+registerDoParallel(cl)                                # Register the parallel cluster
+result   <- foreach(i=1:MonteC, .combine=rbind) %dopar% {
+    # Data generating process
+    Y             <- xx %*% btrue + rnorm(1000,0,1)
+    # Store OLS biased estimator
+    beta.hat      <- solve(t(xx.obs)%*%xx.obs) %*% t(xx.obs)%*%Y
+    final         <- list(b1  = beta.hat[1],
+                          b2  = beta.hat[2])
+}
+parallel::stopCluster(cl)
+```
+* Retrieve statiscs
+```{r}
+b1 <- do.call(what = rbind, args = result[,"b1"])
+b2 <- do.call(what = rbind, args = result[,"b2"])
+
+empirical.b1         <- b1-btrue[1]
+true.variance        <- solve(t(xx) %*% xx)        
+true.b1              <- rnorm(n = MonteC, mean = 0, sd = sqrt(true.variance[1,1]))
+```
+* Plot Histograms
+```{r}
+df  <- data.frame(empirical = empirical.b1, true = true.b1)
+df2 <- df %>% gather(key,value,empirical,true)
+ggplot(df2)+
+  stat_density(aes(x = value, color = key),geom = "line",position = "identity")+
+  geom_vline(xintercept = 0,linetype="dashed")+
+  theme_minimal()+
+  theme(panel.grid.major = element_blank(),
+        legend.title = element_blank())
+```
+
+Example 2: Parallelizing Simulation Experiments
+-----------------------------------------------
+
+### Analyse the *size* of the Omitted Variable Bias
+[Little recap on OLS Regression and Omitted Variable bias](http://www.homepages.ucl.ac.uk/~uctpsc0/Teaching/GR03/MRM.pdf)
+
+Analitical Results lead to 
+
+$bias(\beta_{included}) = \beta_{omitted}\big[{Cov(X_{included},X_{omitted})}/{Var(X_{included})}\big]$
+
+If omitted variables are correlated with included variables, then we obtained biased estimates.
+
+\ 
+
+#### Question: How correlation affect the size of the bias?
+* *We simulate 15 experiments where we let vary the degree of correlation of one omitted variables with one included variable*
+* We parallelize these experiments, each containing a Monte Carlo simulation
+
+```{r}
+MonteC   <- 2000
+rho      <- seq(from = 0.5, to = 0, length.out = 15) ## Correlation coefficient
+x1       <- rnorm(1000,0,1)
+x2       <- rnorm(1000,0,1)
+x3       <- rnorm(1000,0,1)
+x        <- matrix(data = c(x1,x2,x3),ncol = 3)
+## Uncorrelate observations
+x_c      <- x %*% solve(chol(cov(x = x)))
+zapsmall(cov(x_c))
+
+# Coefficients
+btrue    <-  as.vector(x = c(0.5,1,-0.5))
+beta.hat  <- matrix(data = NA,nrow = MonteC,ncol = 2)
+```
+* Setup Parallel Task
+```{r}
+cores    <- detectCores()                             
+cl       <- makeCluster(cores - 1, type="FORK")       # You can also select a given number of cores
+registerDoParallel(cl)                                # Register the parallel cluster
+result   <- foreach(z = 1:length(rho), .combine=rbind) %dopar% {
+  id.matrix      <- diag(3)
+  ## We impose correlation between the omitted and one observed variable
+  id.matrix[2,3] <- rho[z]
+  id.matrix[3,2] <- rho[z]
+  sigma          <- id.matrix
+  
+  Xtrue <- x_c %*% (chol(sigma))                       ## All Variables with assigned correlation
+  X     <- matrix(data = Xtrue[,1:2], ncol = 2)        ## Observables with assigned correlation
+  for (i in 1:MonteC){
+    # Data generating process
+    Y             <- Xtrue %*% btrue + rnorm(1000,0,1)
+    # Store OLS biased estimator
+    beta.hat[i,]  <- solve(t(X)%*%X) %*% t(X)%*%Y
+  }
+  ### Results for each Simulation Experiment ###
+  final         <- list(b1    = beta.hat[,1],
+                        b2    = beta.hat[,2],
+                        Xtrue = Xtrue)
+}
+stopCluster(cl)
+```
+* We have 15 experiments
+
+```{r}
+result
+```
+```{r include=F}
+b2.0    <- result[,"b2"]$result.1-btrue[2]
+b2.1    <- result[,"b2"]$result.8-btrue[2]
+b2.2    <- result[,"b2"]$result.15-btrue[2]
+true.b2 <- rnorm(n = MonteC, mean = 0, sd = sqrt(true.variance[2,2])) 
+df      <- data.frame(`rho=0.5` = b2.0, `rho=0.25`=b2.1, `rho=0`= b2.2)
+df3     <- data.frame(true = true.b2)
+
+df2     <- df %>% 
+  gather(key,value,rho.0.5,rho.0.25,rho.0) %>% 
+  mutate(true = c(true.b2,true.b2,true.b2))
+
+p <- ggplot(df2, aes(x = value))+
+  stat_density(aes(group = key),position = "identity",geom = "line", size = 0.8)+
+  facet_grid(key~. ,scales = "free")+
+  stat_density(aes(x=df2$true),position = "identity",geom = "line",linetype = "dashed")+
+  theme_minimal()+
+  theme(panel.grid.major = element_blank(),
+        legend.position = "none")
+```
+```{r echo=F}
+p
+```
+
+#### As expected, the experiment shows the bias is linearly dependent on the correlation between the omitted variable and the included ones
+
+```{r echo=F}
+bb2 <- double(length = 15)
+for (i in 1:15){
+  we <- eval(parse(text=paste("result[,'b2']$result.",i,"-btrue[2]",sep = "")))
+  bb2[i]    <- mean(we)
+}
+dff <- data.frame(bias = bb2, corr = rho)
+ggplot(dff)+
+  geom_line(aes(x=rho, y = bias), size = 1)+
+  theme_minimal()
+```
+
+
+
