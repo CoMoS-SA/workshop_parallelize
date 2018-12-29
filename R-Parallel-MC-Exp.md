@@ -91,7 +91,7 @@ bias](http://www.homepages.ucl.ac.uk/~uctpsc0/Teaching/GR03/MRM.pdf)
 
 Analitical Results lead to
 
-*bias(β<sub>included*</sub>)=β<sub>omitted</sub>\[*Cov(X<sub>included</sub>, X<sub>omitted</sub>)/*Var(X<sub>included</sub>)\]
+*bias(β<sub>included</sub>)=β<sub>omitted</sub>\[Cov(X<sub>included</sub>, X<sub>omitted</sub>)/Var(X<sub>included</sub>)\]
 
 If omitted variables are correlated with included variables, then we
 obtained biased estimates.
