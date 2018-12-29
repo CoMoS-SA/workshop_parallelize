@@ -178,8 +178,8 @@ obtained biased estimates.
     ## result.14 Numeric,2000 Numeric,2000 Numeric,3000
     ## result.15 Numeric,2000 Numeric,2000 Numeric,3000
 
-![](R-Parallelism_in_Monte_Carlo_Experiments_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+![alt text](https://github.com/CoMoS-SA/tutorials/blob/master/Rplot.png)
 
 #### As expected, the experiment shows the bias is linearly dependent on the correlation between the omitted variable and the included ones
 
-![](R-Parallelism_in_Monte_Carlo_Experiments_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+![alt text](https://github.com/CoMoS-SA/tutorials/blob/master/Rplot01.png)
